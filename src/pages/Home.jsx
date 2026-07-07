@@ -1,6 +1,5 @@
 import React from 'react'
 import Introduccion from '../sections/Introduccion/Introduccion'
-import Eventos from '../sections/Eventos/Eventos'
 import Proposito from '../sections/Proposito/Proposito'
 import Estudios from '../sections/Estudios/Estudios'
 import Libros from '../sections/Libros/Libros'
@@ -14,7 +13,6 @@ const Home = React.memo(() => (
     <div>
         <Introduccion />
         <Biografia />
-        <Eventos />
         <Proposito />
         <Estudios />
         <Libros />

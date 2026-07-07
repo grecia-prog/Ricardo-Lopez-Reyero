@@ -7,6 +7,7 @@ import Footer from './components/Footer/Footer';
 import { IntlProvider } from 'react-intl';
 import esMessages from './locales/es.json';
 import enMessages from './locales/en.json';
+import Documentos from './pages/Documentos';
 
 const messages = {
   es: esMessages,
@@ -26,7 +27,7 @@ function ScrollToHash() {
       }
     }
   }, [location]); // Se ejecuta cada vez que cambia la ubicación (incluyendo el hash)
-  
+
   return null; // Este componente solo maneja efectos secundarios
 }
 
@@ -54,6 +55,7 @@ function App() {
 
           {/* Ruta para la página Descargas en español */}
           <Route path="/descargas" element={<Descargas />} />
+          <Route path="/documentos-importantes" element={<Documentos />} />
 
           {/* Ruta para la página principal en inglés */}
           <Route path="/en" element={<Home />} />

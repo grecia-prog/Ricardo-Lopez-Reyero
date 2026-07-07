@@ -1,6 +1,7 @@
 import React, { Suspense, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import './Biografia.scss'; // Assuming the custom styles are here.
+import { Link } from 'react-router-dom';
 import inicios1 from '../../assets/img/Ricardo_Lopez_Rayero_Biografia_Vida_1.webp';
 import inicios2 from '../../assets/img/Ricardo_Lopez_Rayero_Biografia_Vida_2.webp';
 import inicios3 from '../../assets/img/Ricardo_Lopez_Rayero_Biografia_Vida_3.webp';
@@ -44,6 +45,7 @@ const Biografia = () => {
   const intl = useIntl(); // Usa el hook useIntl
   const [selectedSection, setSelectedSection] = useState('inicios');
   const [isMobile, setIsMobile] = useState(false);
+  const [showToast, setShowToast] = useState(false);
 
   const sections = {
     inicios: {
@@ -155,7 +157,8 @@ const Biografia = () => {
         'biografia.conclusiones.con27',
         'biografia.conclusiones.con28',
         'biografia.conclusiones.con29',
-      ]
+      ],
+      frases: []
     },
     // Add other sections similarly
   };
@@ -186,141 +189,190 @@ const Biografia = () => {
   };
 
   const copyToClipboard = (id) => {
-    const text = intl.formatMessage({ id }); // Obtiene el texto asociado al id
+    const text = intl.formatMessage({ id });
     navigator.clipboard.writeText(text).then(() => {
-      alert("Texto copiado al portapapeles!");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
     });
   };
 
 
   return (
-    <ContentBox
-      varmaxwidth='100%' varwidth='100%' vardisplay='flex' varpadding='120px 0 120px' varpaddingm='60px 0 60px'
-    >
-      <Suspense fallback={<div>Loading...</div>}>
-        <div className="biography-section">
-          {/* Sidebar menu */}
-          <div className="sidebar-menu">
-            <div className={styles.columnsAboveTitleCenter}>
-              <div className={styles.littleLine} />
-              <div>
-                <p className={styles.AboveTitle}>
-                  <FormattedMessage
-                    id="biografia.title"
-                    defaultMessage='titulo'
-                  />
-                </p>
+    <>
+      {/* Toast notification */}
+      <div style={{
+        position: 'fixed',
+        bottom: '32px',
+        left: '50%',
+        transform: showToast ? 'translateX(-50%) translateY(0)' : 'translateX(-50%) translateY(20px)',
+        opacity: showToast ? 1 : 0,
+        transition: 'opacity 0.35s ease, transform 0.35s ease',
+        pointerEvents: 'none',
+        zIndex: 9999,
+        background: 'linear-gradient(135deg, #585DCC 0%, #7B5EA7 100%)',
+        color: '#fff',
+        padding: '14px 28px',
+        borderRadius: '12px',
+        boxShadow: '0 8px 30px rgba(88, 93, 204, 0.35)',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '10px',
+        fontSize: '14px',
+        fontFamily: 'Red Hat Display, sans-serif',
+        fontWeight: '500',
+        minWidth: '220px',
+        justifyContent: 'center',
+      }}>
+        <span style={{ fontSize: '18px' }}>✓</span>
+        Texto copiado
+      </div>
+
+      <ContentBox
+        varmaxwidth='100%' varwidth='100%' vardisplay='flex' varpadding='120px 0 120px' varpaddingm='60px 0 60px'
+      >
+        <Suspense fallback={<div>Loading...</div>}>
+          <div className="biography-section">
+            {/* Sidebar menu */}
+            <div className="sidebar-menu">
+              <div className={styles.columnsAboveTitleCenter}>
+                <div className={styles.littleLine} />
+                <div>
+                  <p className={styles.AboveTitle}>
+                    <FormattedMessage
+                      id="biografia.title"
+                      defaultMessage='titulo'
+                    />
+                  </p>
+                </div>
               </div>
-            </div>
-            <RedHatDisplay
-              varfontsize='40px'
-              varweight='700'
-              varcolor='#232E35'
-              varpadding='0 0 85px'
-              fontsizemobile='22px'
-            >
-              <FormattedMessage id='biografia.subtitle' defaultMessage='subtitulo' />
-            </RedHatDisplay>
-            {Object.keys(sections).map(section => (
-              <button
-                key={section}
-                onClick={() => setSelectedSection(section)}
-                className={`menu-item ${selectedSection === section ? 'active' : ''}`}
+              <RedHatDisplay
+                varfontsize='40px'
+                varweight='700'
+                varcolor='#232E35'
+                varpadding='0 0 85px'
+                fontsizemobile='22px'
               >
-                {sections[section].icon}
-                <FormattedMessage id={sections[section].title} defaultMessage='titulo de seccion' />
-                <ChevronRight className='angle' />
-              </button>
-            ))}
-          </div>
-
-          {/* Content area */}
-          <div className="content-area">
-            {/* Flechas para cambiar secciones en móvil */}
-            {isMobile && (
-              <ContentBox
-                vardisplay='flex'
-                varwidth='100%'
-                varpadding='0 0 30px'
-              >
-                <ContentBox>
-                  <div className={styles.columnsAboveTitleCenter}>
-                    <div className={styles.littleLine} />
-                    <div>
-                      <p className={styles.AboveTitle}>
-                        <FormattedMessage
-                          id="biografia.title"
-                        />
-                      </p>
-                    </div>
-                  </div>
-                  <RedHatDisplay
-                    varfontsize='40px'
-                    varweight='700'
-                    varcolor='#232E35'
-                    varpadding='0 0 25px'
-                    fontsizemobile='22px'
-                  >
-                    <FormattedMessage id='biografia.subtitle' defaultMessage='subtitulo' />
-                  </RedHatDisplay>
-                </ContentBox>
-
-                <Gridwrapper vargridtemplatecolumns='20% 40% 20%' justifyContent='space-between' varwidth='96%'>
-                  <Griditem>
-                    <Btn onClick={handlePrevSection} className="prev-button" varpadding='5px 9px' aria-label="Anterior">
-                      <ChevronLeft aria-hidden="true" />
-                    </Btn>
-                  </Griditem>
-                  <Griditem>
-                    <RedHatDisplay varfontsize='18px' varweight='500' varcolor='#585DCC' ><FormattedMessage id={sections[selectedSection].title} /></RedHatDisplay>
-
-                  </Griditem>
-                  <Griditem vardisplay='flex' alignItems='flex-end'>
-                    <Btn onClick={handleNextSection} className="next-button" varpadding='5px 9px' aria-label="Siguiente">
-                      <ChevronRight aria-hidden="true" />
-                    </Btn>
-                  </Griditem>
-                </Gridwrapper>
-              </ContentBox>
-            )}
-            <div className="content-box">
-              <div className='image-gallery'>
-                {sections[selectedSection]?.images?.map((imgSrc, index) => (
-                  <img src={imgSrc} alt={`section-${selectedSection}-image-${index}`} key={index} loading='lazy' />
-                ))}
-              </div>
-              {selectedSection === 'conclusiones' ? (
-                sections.conclusiones.contents.map((paragraph, index) => (
-                  <div key={index} className="paragraph-container">
-                    <Roboto varfontsize='16px' varcolor='#595959' varweight='400' vartextalign='left' varlineheight='1.5em' varfontsizemobile='13px'>
-                      <FormattedMessage id={paragraph} defaultMessage='contenido' />
-                    </Roboto>
-                    <Btn onClick={() => copyToClipboard(paragraph)} className="copy-button" vargridgap='10px' varcolor='#2A2FAB' varweight='400' backgcolor='#f0f0f000' varpadding='10px 48px' varfontsizemobile='12px' smpadd='6px 12px' vardropshadowmobile='none' varmargin='7px 0 0 auto'><Download className='icondownload' /> Copiar</Btn>
-                  </div>
-                ))
-              ) : (
-                <Roboto
-                  varfontsize='16px'
-                  varcolor='#595959'
-                  varweight='400'
-                  vartextalign='left'
-                  varlineheight='1.5em'
-                  varfontsizemobile='16px'
+                <FormattedMessage id='biografia.subtitle' defaultMessage='subtitulo' />
+              </RedHatDisplay>
+              {Object.keys(sections).map(section => (
+                <button
+                  key={section}
+                  onClick={() => setSelectedSection(section)}
+                  className={`menu-item ${selectedSection === section ? 'active' : ''}`}
                 >
-                  <FormattedMessage
-                    id={sections[selectedSection].content}
-                    values={{
-                      br: <br />,
-                    }}
-                    defaultMessage='contents'
-                  />
-                </Roboto>
+                  {sections[section].icon}
+                  <FormattedMessage id={sections[section].title} defaultMessage='titulo de seccion' />
+                  <ChevronRight className='angle' />
+                </button>
+              ))}
+            </div>
+
+            {/* Content area */}
+            <div className="content-area">
+              {/* Flechas para cambiar secciones en móvil */}
+              {isMobile && (
+                <ContentBox
+                  vardisplay='flex'
+                  varwidth='100%'
+                  varpadding='0 0 30px'
+                >
+                  <ContentBox>
+                    <div className={styles.columnsAboveTitleCenter}>
+                      <div className={styles.littleLine} />
+                      <div>
+                        <p className={styles.AboveTitle}>
+                          <FormattedMessage
+                            id="biografia.title"
+                          />
+                        </p>
+                      </div>
+                    </div>
+                    <RedHatDisplay
+                      varfontsize='40px'
+                      varweight='700'
+                      varcolor='#232E35'
+                      varpadding='0 0 25px'
+                      fontsizemobile='22px'
+                    >
+                      <FormattedMessage id='biografia.subtitle' defaultMessage='subtitulo' />
+                    </RedHatDisplay>
+                  </ContentBox>
+
+                  <Gridwrapper vargridtemplatecolumns='20% 40% 20%' justifyContent='space-between' varwidth='96%'>
+                    <Griditem>
+                      <Btn onClick={handlePrevSection} className="prev-button" varpadding='5px 9px' aria-label="Anterior">
+                        <ChevronLeft aria-hidden="true" />
+                      </Btn>
+                    </Griditem>
+                    <Griditem>
+                      <RedHatDisplay varfontsize='18px' varweight='500' varcolor='#585DCC' ><FormattedMessage id={sections[selectedSection].title} /></RedHatDisplay>
+
+                    </Griditem>
+                    <Griditem vardisplay='flex' alignItems='flex-end'>
+                      <Btn onClick={handleNextSection} className="next-button" varpadding='5px 9px' aria-label="Siguiente">
+                        <ChevronRight aria-hidden="true" />
+                      </Btn>
+                    </Griditem>
+                  </Gridwrapper>
+                </ContentBox>
               )}
+              <div className="content-box">
+                <div className='image-gallery'>
+                  {sections[selectedSection]?.images?.map((imgSrc, index) => (
+                    <img src={imgSrc} alt={`section-${selectedSection}-image-${index}`} key={index} loading='lazy' />
+                  ))}
+                </div>
+                {selectedSection === 'conclusiones' ? (
+                  <>
+                    {sections.conclusiones.contents.map((paragraph, index) => (
+                      <div key={index} className="paragraph-container">
+                        <Roboto varfontsize='16px' varcolor='#595959' varweight='400' vartextalign='left' varlineheight='1.5em' varfontsizemobile='13px'>
+                          <FormattedMessage id={paragraph} defaultMessage='contenido' />
+                        </Roboto>
+                        <Btn onClick={() => copyToClipboard(paragraph)} className="copy-button" vargridgap='10px' varcolor='#2A2FAB' varweight='400' backgcolor='#f0f0f000' varpadding='10px 48px' varfontsizemobile='12px' smpadd='6px 12px' vardropshadowmobile='none' varmargin='7px 0 0 auto'><Download className='icondownload' /> Copiar</Btn>
+                      </div>
+                    ))}
+                    <RedHatDisplay varfontsize='26px' varcolor='#595959' varweight='600' vartextalign='left' varlineheight='1.5em' varfontsizemobile='18px'>
+                      <FormattedMessage id='biografia.conclusiones.frases' defaultMessage='frases' />
+                    </RedHatDisplay>
+                    {sections.conclusiones.frases.map((paragraph, index) => (
+                      <div key={index} className="paragraph-container">
+                        <Roboto varfontsize='16px' varcolor='#595959' varweight='400' vartextalign='left' varlineheight='1.5em' varfontsizemobile='13px'>
+                          <FormattedMessage id={paragraph} defaultMessage='contenido' />
+                        </Roboto>
+                        <Btn onClick={() => copyToClipboard(paragraph)} className="copy-button" vargridgap='10px' varcolor='#2A2FAB' varweight='400' backgcolor='#f0f0f000' varpadding='10px 48px' varfontsizemobile='12px' smpadd='6px 12px' vardropshadowmobile='none' varmargin='7px 0 0 auto'><Download className='icondownload' /> Copiar</Btn>
+                      </div>
+                    ))}
+                    <Link to='/descargas' style={{ textDecoration: 'none' }}>
+                      <Btn varmargin='24px auto 0' varwidth='60%' varminwidth='60%' varwidthmobile='80%'  >
+                        Ir a Descargas
+                      </Btn>
+                    </Link>
+                  </>
+                ) : (
+                  <Roboto
+                    varfontsize='16px'
+                    varcolor='#595959'
+                    varweight='400'
+                    vartextalign='left'
+                    varlineheight='1.5em'
+                    varfontsizemobile='16px'
+                  >
+                    <FormattedMessage
+                      id={sections[selectedSection].content}
+                      values={{
+                        br: <br />,
+                      }}
+                      defaultMessage='contents'
+                    />
+                  </Roboto>
+                )}
+              </div>
             </div>
           </div>
-        </div>
-      </Suspense>
-    </ContentBox>
+        </Suspense>
+      </ContentBox>
+    </>
   );
 };
 

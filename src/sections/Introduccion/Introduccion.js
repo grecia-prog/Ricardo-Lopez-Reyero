@@ -5,9 +5,7 @@ import stylesIntroduction from "./Introduccion.module.scss";
 import { ContentBox, ImagePicture, RedHatDisplay } from '../../components/Styled';
 
 const Introduccion = () => {
-  let id = require('../../assets/img/Ingenieria_Digital_by_Ricardo_Lopez.webp');
-  let superleads = require('../../assets/img/SuperLeads_by_Ricardo_Lopez.webp');
-  let int = require('../../assets/img/INT_by_Ricardo_Lopez.webp');
+  let superleads = require('../../assets/img/Logotipo SuperLeads-01 (1) (1).png');
   let rlrmovil = require('../../assets/img/rlrmovil.webp');
 
   const [isMobile, setIsMobile] = useState(false);
@@ -42,6 +40,7 @@ const Introduccion = () => {
         varmaxwidth='1248px'
         varwidth='100%'
         varpadding='60px 0 27px'
+        varpaddingm='30px 0px 27px'
         vardisplaymovil='flex'
       >
         <div className={stylesIntroduction.container}>
@@ -93,24 +92,17 @@ const Introduccion = () => {
             </p>
           </div>
           <div className={stylesIntroduction.contentProyectos}>
-            <a href='https://ingenieriadigital.mx'>
-              <img src={id} alt="IngenieriaDigital_RicardoLopezRayero" className={stylesIntroduction.imgID} loading='lazy' />
-              <RedHatDisplay varcolor='white' varfontsize='13px' varpadding='10px 0 0'>2019</RedHatDisplay>
-            </a>
             <a href='https://superleads.mx'>
               <img src={superleads} alt="SuperLeads_RicardoLopezRayero" className={stylesIntroduction.imgSL} loading='lazy' />
-              <RedHatDisplay varcolor='white' varfontsize='13px' varpadding='10px 0 0'>2022</RedHatDisplay>
             </a>
-            <a href='https://int.store'>
-              <img src={int} alt="Int_RicardoLopezRayero" className={stylesIntroduction.imgInt} loading='lazy' />
-              <RedHatDisplay varcolor='white' varfontsize='13px' varpadding='10px 0 0'>2022</RedHatDisplay>
-            </a>
+
           </div>
           <RedHatDisplay
             varfontsize='12.26px'
             varcolor='#fff'
             vartextalign='left'
             varpadding='48px 0 30px'
+            smpadding='33px 10px 30px'
           >
             <FormattedMessage id='introduction.updated' defaultMessage='ultima actualizacion' />
           </RedHatDisplay>

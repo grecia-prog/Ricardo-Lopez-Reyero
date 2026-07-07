@@ -1,6 +1,8 @@
 import React, { lazy, Suspense } from 'react'
 import { ContentBox, Griditem, Gridwrapper, ImagePicture, RedHatDisplay } from '../../../components/Styled'
 import ImaginationImg from '../../../assets/img/Imagination_Bob_Proctor.png';
+import FrecuenciaImg from '../../../assets/img/Frecuencia_296Hz_x.png';
+import Audio1 from '../../../assets/Audios/1 Frecuencia 396Hz.mp3';
 import Thewill from '../../../assets/img/The_will_Bob_Proctor.png'
 import PercepcionImg from '../../../assets/img/Percepcion_Bob_Proctor.png'
 import Audio2 from '../../../assets/Audios/Imagination - Bob Proctor.mp3';
@@ -22,6 +24,14 @@ const audios = [
   
   {
     id: 1,
+    audioUrl: Audio1,
+    imgAudio: FrecuenciaImg,
+    title: 'Frecuencia 396Hz',
+    artist: 'x',
+    album: 'Desarrollo Personal'
+  },
+  {
+    id: 2,
     audioUrl: Audio2,
     imgAudio: ImaginationImg,
     title: 'Imagination',
@@ -29,7 +39,7 @@ const audios = [
     album: 'Desarrollo Personal'
   },
   {
-    id: 2,
+    id: 3,
     audioUrl: Audio3,
     imgAudio: Thewill,
     title: 'The Will',
@@ -37,7 +47,7 @@ const audios = [
     album: 'Desarrollo Personal'
   },
   {
-    id: 3,
+    id: 4,
     audioUrl: Audio4,
     imgAudio: PercepcionImg,
     title: 'Percepcion',
@@ -45,7 +55,7 @@ const audios = [
     album: 'Desarrollo Personal'
   },
   {
-    id: 4,
+    id: 5,
     audioUrl: Audio5,
     imgAudio: Mundointerno,
     title: 'Mundo Interno vs Mundo Externo',
@@ -53,7 +63,7 @@ const audios = [
     album: 'Mente y Realidad'
   },
   {
-    id: 5,
+    id: 6,
     audioUrl: Audio6,
     imgAudio: atusordenes,
     title: 'A tus ordenes',
@@ -61,7 +71,7 @@ const audios = [
     album: 'Mente y Realidad'
   },
   {
-    id: 6,
+    id: 7,
     audioUrl: Audio7,
     imgAudio: imaginacionDespierta,
     title: 'Imaginacion Despierta',
@@ -117,6 +127,7 @@ const Audios = ({ id }) => {
             <AudioPlayer
               loading='lazy'
               src={audio.audioUrl}
+              preload='metadata'
               onPlay={() => updateMediaSession(audio)}
               customAdditionalControls={[]}
               customVolumeControls={[]}
