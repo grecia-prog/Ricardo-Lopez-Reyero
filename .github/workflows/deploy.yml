@@ -1,0 +1,107 @@
+name: Publicar sitio en ChemiCloud
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publicar-rlr
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Descargar proyecto y archivos LFS
+        uses: actions/checkout@v6
+        with:
+          lfs: true
+          persist-credentials: false
+
+      - name: Preparar Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "22.18.0"
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Compilar sitio
+        run: npm run build
+
+      - name: Comprobar resultado
+        run: test -s build/index.html
+
+      - name: Instalar cliente SFTP
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y lftp
+
+      - name: Configurar acceso SSH
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/deploy
+          chmod 600 ~/.ssh/deploy
+
+          ssh-keyscan -T 15 -p 1988 -t ed25519 \
+            ricardolopezreyero.com > ~/.ssh/host_candidate
+
+          EXPECTED="SHA256:5qxV0JFul1SEV6BziccWDLmI423q0enZvvybo+dOcSI"
+          ACTUAL="$(ssh-keygen -lf ~/.ssh/host_candidate -E sha256 | awk '{print $2}')"
+
+          if [ "$ACTUAL" != "$EXPECTED" ]; then
+            echo "La huella SSH no coincide con la conexión comprobada."
+            exit 1
+          fi
+
+          mv ~/.ssh/host_candidate ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+          cat > ~/.ssh/config <<'EOF'
+          Host ricardolopezreyero.com
+            HostName ricardolopezreyero.com
+            User ricardolopez
+            Port 1988
+            IdentityFile ~/.ssh/deploy
+            IdentitiesOnly yes
+            BatchMode yes
+            StrictHostKeyChecking yes
+          EOF
+          chmod 600 ~/.ssh/config
+
+      - name: Publicar contenido de build
+        run: |
+          lftp <<'EOF'
+          set cmd:fail-exit yes
+          set net:max-retries 2
+          set net:timeout 30
+          set sftp:connect-program "ssh -a -x"
+          open sftp://ricardolopez@ricardolopezreyero.com:1988
+          mirror --reverse --verbose --no-perms \
+            --exclude-glob "api/" \
+            --exclude-glob "backup-rlr/" \
+            --exclude-glob "cgi-bin/" \
+            --exclude-glob "wp-*/" \
+            --exclude-glob "*.php" \
+            --exclude-glob ".htaccess" \
+            --exclude-glob ".user.ini" \
+            --exclude-glob ".well-known/" \
+            --exclude-glob "index.html" \
+            build/ /home/ricardolopez/public_html/
+          put build/index.html -o /home/ricardolopez/public_html/index.html
+          bye
+          EOF
+
+      - name: Limpiar llave privada
+        if: always()
+        run: rm -f ~/.ssh/deploy
